@@ -35,6 +35,7 @@ async function main() {
       const func = new Function("return " + dsa.functionString)();
       const appResp = await func({ AWS, region: "eu-west-1" });
       const pushRespToDuckDB = await createTableWithDataFromJSON(duckDbConn, appResp, dsa.tablename);
+      console.log(pushRespToDuckDB + "\n");
       await duckDbConn.executeIterator(pushRespToDuckDB);
     })
   );

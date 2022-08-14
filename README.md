@@ -1,14 +1,14 @@
 # Data Source Applications (DSA) in BoilingData
 
-This repository is an SDK for creating data integrations into [BoilingData](https://www.boilingdata.com/). Essentially, this allows converting slow APIs into fast in-memory analytics SQL caches, on-demand, that you query with SQL and, join with other data integrations or with more static data on S3 Data Lake. Fast embedded databases are leveraged to deliver high analytics performance with data in-memory.
+This repository is an SDK for creating data integrations into [BoilingData](https://www.boilingdata.com/) (Boiling). Essentially, this allows converting slow APIs into fast in-memory analytics SQL caches, on-demand, that you query with SQL and, join with other data integrations or with more static data on S3 Data Lake. Fast embedded databases are leveraged to deliver high analytics performance with data in-memory.
 
-## TL;DR
+## Summary
 
-APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Data Source Applications, DSAs. A DSA is a JSON that describes 1) required parameters and a 2) JS function template.
+APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) (Boiling) as SQL Tables. We call these Data Source Applications, DSAs. A DSA is a JSON that describes 1) required parameters and a 2) JS function template.
 
-Function templates are rendered with the parameters parsed from the SQL. BoilingData calls this function with a pre-defined set of parameters, like with an instantiation of the NodeJS AWS SDK (`aws-sdk`), and AWS `region`.
+Boiling renders the function tamplate with the parameters parsed from the SQL and calls it with a pre-defined set of parameters, like with an instantiation of the NodeJS AWS SDK (`aws-sdk`), and AWS `region`.
 
-> You can install JS function templates into BoilingData and use them in your SQL with the Table Function SQL syntax. See BoilingData on how to manage your DSAs (list, install, update, etc.).
+> You can install JS function templates into Boiling and use them in your SQL with the Table Function SQL syntax. See www.boilingdata.com on how to manage your DSAs (list, install, update, etc.).
 
 ```sql
   SELECT  key, size
@@ -16,11 +16,11 @@ Function templates are rendered with the parameters parsed from the SQL. Boiling
 ORDER BY  size;
 ```
 
-BoilingData will call the function and store the JSON Array of Objects results into an in-memory SQL Table. Then it executes the given SQL over it. Further queries with the same DSA parameters will re-use the cached SQL Table.
+Boiling stores the results (JSON, Array of Objects) into an in-memory SQL Table. Then it executes the given SQL over it. Further queries with the same DSA parameters will re-use the cached SQL Table.
 
 ## Data Source Application (DSA) JSON
 
-The whole application is a JSON file, `dsa.awssdk.json`, that can be installed into your BoilingData account and used like this:
+The data source application consists of a JSON file, like [`dsa.awssdk.json`](dsa.awssdk.json), that can be installed into your Boiling account and then used in your SQL queries.
 
 ```sql
   SELECT  "Name", "CreationDate"
@@ -30,7 +30,7 @@ The whole application is a JSON file, `dsa.awssdk.json`, that can be installed i
 ORDER BY  "Name";
 ```
 
-On a first call, BoilingData service renders the JS function template with the provided parameters in the SQL query, creates the actual Function, and invokes it with a pre-defined set of parameters (e.g. `{ AWS: AWS, region: 'us-east-1' }`, where `AWS` is `aws-sdk` instance). The function must return JSON array of Objects. Boiling will infer types from the returned JSON, create a new in-memory table (e.g. on DuckDB) and push the Objects as rows into it.
+Boiling renders the function template with parameters parsed from SQL, calls the function, infers types from the returned JSON, create a new in-memory table (e.g. on DuckDB), inserts the Objects as rows into it, and runs your SQL over it.
 
 After the first call, the API call results are cached in an in-memory SQL database table and can be re-used for various SQL queries. Thus, further queries using the same DSA and parameters will not invoke the DSA application but re-use the cached results in the SQL Table.
 

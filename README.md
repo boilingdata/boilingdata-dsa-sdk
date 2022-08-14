@@ -1,8 +1,8 @@
 # Data Source Applications (DSA) in BoilingData
 
-This repository is an SDK for creating data integrations into [BoilingData](https://www.boilingdata.com/) (Boiling). Essentially, this allows converting slow APIs into fast in-memory analytics SQL caches, on-demand, that you query with SQL and, join with other data integrations or with more static data on S3 Data Lake. Fast embedded databases are leveraged to deliver high analytics performance with data in-memory.
+This repository is an SDK for creating data integrations into [BoilingData](https://www.boilingdata.com/) (Boiling). Essentially, this allows converting APIs/code/services into fast in-memory analytics SQL caches, on-demand, that you query with SQL and join with other data integrations or with more static data on S3 Data Lake like Parquet files. Fast embedded databases are leveraged to deliver high analytics performance with in-memory tables.
 
-## Summary
+## Data Source Applications
 
 APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) (Boiling) as SQL Tables. We call these Data Source Applications, DSAs. A DSA is a JSON that describes 1) required parameters and a 2) JS function template.
 
@@ -18,7 +18,7 @@ ORDER BY  size;
 
 Boiling stores the results (JSON, Array of Objects) into an in-memory SQL Table. Then it executes the given SQL over it. Further queries with the same DSA parameters will re-use the cached SQL Table.
 
-## Data Source Application (DSA) JSON
+## DSA is a JSON file
 
 The data source application consists of a JSON file, like [`dsa.awssdk.json`](dsa.awssdk.json), that can be installed into your Boiling account and then used in your SQL queries.
 

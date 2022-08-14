@@ -1,10 +1,10 @@
-# Data Source Applications (DSA) in BoilingData
+# Integrate anything, query with SQL
 
-This repository is an SDK for creating data integrations into [BoilingData](https://www.boilingdata.com/) (Boiling). Essentially, this allows converting APIs/code/services into fast in-memory analytics SQL caches, on-demand, that you query with SQL and join with other data integrations or with more static data on S3 Data Lake like Parquet files. Fast embedded databases are leveraged to deliver high analytics performance with in-memory tables.
+This repository is an SDK for creating data integrations into [BoilingData](https://www.boilingdata.com/) ("Boiling"). Essentially, this allows converting APIs/code/services into fast in-memory analytics SQL caches, on-demand, that you query with SQL and join with other data integrations or with more static data on S3 Data Lake like Parquet files. Fast embedded databases are leveraged to deliver high analytics performance with in-memory tables.
 
 ## Data Source Applications
 
-APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) (Boiling) as SQL Tables. We call these Data Source Applications, DSAs. A DSA is a JSON that describes 1) required parameters and a 2) JS function template.
+APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Data Source Applications, DSAs. A DSA is a JSON that describes 1) required parameters and a 2) JS function template.
 
 Boiling renders the function tamplate with the parameters parsed from the SQL and calls it with a pre-defined set of parameters, like with an instantiation of the NodeJS AWS SDK (`aws-sdk`), and AWS `region`.
 

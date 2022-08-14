@@ -105,8 +105,18 @@ yarn build
 yarn test
 ```
 
+## Performance Considerations
+
+Once in the in-memory embedded database tables, like DuckDB, the queries run blazing fast run multi-threaded and single tenant (query dedicated CPU and memory resources).
+
+Getting the data into the memory, into the SQL Table is slower and thus introduces initial loadingn delay. Like reading DuckDB or Parquet files from S3 with all the available network bandwidth, or with DSAs reading from anything you define (a DSA could be just random number generator that generates test data).
+
+With DSAs, we use JSON as the interface, which is very inefficient transport format in general. However, APIs and services usually respond with JSON, so it is a convenient way of integrating and creating sources into Boiling. Furthermore, we don't use JSON with the queries as once the data has been initially loaded it is in database native optimised format.
+
 ## Security Considerations
 
-BoilingData runs queries in single tenant resources that have secure boundaries (e.g. AWS Lambda that is also PCI DSS compliant). DSA applications are run within the limits of the IAM Roles that are provided by customers.
+Boiling runs queries in single tenant resources that have secure execution boundaries (e.g. AWS Lambda that is also PCI DSS compliant). DSA applications are also run within the limits of the AWS IAM Roles that are provided by customers.
 
-Since every query has its own dedicated resources and customers define the access policies, interference between customers is blocked. No DSA has access to the BoilingData system resources.
+Since every query has its own dedicated resources and customer defined (AWS IAM) access policies, interference between customers is blocked and exposure is controlled. Also, no DSA has access to the Boiling system resources.
+
+DSA functions are run in `"use strict";` mode with `new Function()` API, and under customer provided IAM assumed role. DSAs are JSON files that anybody can review and validate. Also, installing them is under the control of the user. However, like with any code, users are responsible to maintain the code and install updates when necessary (unless it is a DSA that Boiling maintains, provides, and updates when necessary).

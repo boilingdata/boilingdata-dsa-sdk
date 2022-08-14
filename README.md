@@ -120,3 +120,9 @@ Boiling runs queries in single tenant resources that have secure execution bound
 Since every query has its own dedicated resources and customer defined (AWS IAM) access policies, interference between customers is blocked and exposure is controlled. Also, no DSA has access to the Boiling system resources.
 
 DSA functions are run in `"use strict";` mode with `new Function()` API, and under customer provided IAM assumed role. DSAs are JSON files that anybody can review and validate. Also, installing them is under the control of the user. However, like with any code, users are responsible to maintain the code and install updates when necessary (unless it is a DSA that Boiling maintains, provides, and updates when necessary).
+
+## Discussion
+
+DSAs are not meant to be big applications that require loads of modules and hundreds of lines of code, but a small shim layer that can e.g. use `dsa.awssdk()` SQL Table function to invoke your AWS Lambda, or use `dsa.http()` to call your REST API that hosts an entire fleet of microservices.
+
+Error handling needs to be taken care of to avoid hanging queries. We hope that this repository will serve as a starting point to develop reliable and good integrations.

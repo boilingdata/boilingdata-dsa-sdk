@@ -1,4 +1,4 @@
-# Integrate anything, query with SQL
+# Integrate anything with SQL - BoilingData DSAs
 
 This repository is an SDK for creating data integrations into [BoilingData](https://www.boilingdata.com/) ("Boiling"). Essentially, this allows converting APIs/code/services into fast in-memory analytics SQL caches, on-demand, that you query with SQL and join with other data integrations or with more static data on S3 Data Lake like Parquet files. Fast embedded databases are leveraged to deliver high analytics performance with in-memory tables.
 

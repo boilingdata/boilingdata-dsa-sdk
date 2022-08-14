@@ -1,0 +1,30 @@
+version: "3"
+services:
+  test:
+    build:
+      dockerfile: Dockerfile
+      context: .
+    container_name: test
+    working_dir: /var/task
+    tty: true
+    stdin_open: true
+    image: amazonlinux:latest
+    environment:
+      #AWS_CONTAINER_CREDENTIALS_RELATIVE_URI: $AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
+      AWS_PROFILE: default
+      AWS_CONFIG_FILE: /root/.aws/credentials
+      AWS_DEFAULT_REGION: "eu-west-1"
+      AWS_REGION: "eu-west-1"
+      AWS_SDK_LOAD_CONFIG: 1
+      YARN_CACHE_FOLDER: /yarn_cache
+    volumes:
+      - .:/var/task:rw
+      - node-modules:/var/task/node_modules:rw
+      - yarn-cache:/yarn_cache:rw
+      - ~/.aws/credentials:/root/.aws/credentials:ro
+    entrypoint: ["bash", "-c"]
+    command: ["/bin/bash"]
+
+volumes:
+  node-modules:
+  yarn-cache:

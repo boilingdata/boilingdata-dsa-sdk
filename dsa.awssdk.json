@@ -1,0 +1,41 @@
+[
+  {
+    "version": "0.1.0",
+    "name": "awssdk",
+    "description": "AWS SDK Data Source App (DSA) for BoilingData",
+    "templateType": "json-templates",
+    "funcTemplate": "async ({ AWS, region }) => { const _s = new AWS.{{service}}({ region }); return (await _s.{{apicall}}({{params}}).promise().catch(err => console.error(err))){{resultPath}}; }",
+    "parameters": [
+      {
+        "name": "service",
+        "description": "AWS Service to use, like S3 or Lambda"
+      },
+      {
+        "name": "apicall",
+        "description": "SDK method to call, like `listObjectsV2`"
+      },
+      {
+        "name": "params",
+        "description": "What parameters to pass to the method call, like '{\"Bucket\":\"boilingdata-demo\",\"Delimiter\":\"/\"}'"
+      },
+      {
+        "name": "resultPath",
+        "description": "What part to pick up from the AWS JSON resopnse (e.g. `.Contents`). The response must be an array of objects."
+      }
+    ],
+    "examples": [
+      {
+        "sql": "SELECT \"Name\", \"CreationDate\" FROM dsa.awssdk('S3','listBuckets','','.Buckets');",
+        "description": "Use AWS NodeJS SDK to all S3 Buckets"
+      },
+      {
+        "sql": "SELECT key, size FROM dsa.awssdk('S3','listObjectsV2','{\"Bucket\":\"boilingdata-demo\",\"Delimiter\":\"/\"}','.Contents') WHERE key LIKE '%.parquet' ORDER BY key;",
+        "description": "Use AWS NodeJS SDK to list a bucket, with delimiter (folders)"
+      },
+      {
+        "sql": "SELECT * FROM dsa.awssdk('Lambda','invoke','{\"FunctionName\":\"myLatestScoresLambda\",\"Payload\":JSON.stringify({\"region\":\"us\"})}','') ORDER BY score;",
+        "description": "Use AWS NodeJS SDK to call Lambda function"
+      }
+    ]
+  }
+]

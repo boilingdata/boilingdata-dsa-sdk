@@ -4,9 +4,17 @@ This repository is an SDK for creating data integrations into [BoilingData](http
 
 ## TL;DR
 
-APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Data Source Applications, DSAs. A DSA is a JSON that describes required parameters and a JS function template. BoilingData passes pre-defined set of parameters for the rendered functions, like an instance of the AWS SDK.
+APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Data Source Applications, DSAs. A DSA is a JSON that describes 1) required parameters and a 2) JS function template.
 
-> You can install JavaScript function templates into BoilingData and call them from your SQL with the Table Function SQL syntax. See BoilingData on how to manage your DSAs (list, install, update, etc.).
+Function templates are rendered with the parameters parsed from the SQL. BoilingData calls this function with a pre-defined set of parameters, like with an instantiation of the NodeJS AWS SDK (`aws-sdk`), and AWS `region`.
+
+> You can install JS function templates into BoilingData and use them in your SQL with the Table Function SQL syntax. See BoilingData on how to manage your DSAs (list, install, update, etc.).
+
+```sql
+  SELECT  key, size
+    FROM  dsa.awssdk('S3','listObjectsV2','{"Bucket":"myBucket"}','.Contents')
+ORDER BY  size;
+```
 
 BoilingData will call the function and store the JSON Array of Objects results into an in-memory SQL Table. Then it executes the given SQL over it. Further queries with the same DSA parameters will re-use the cached SQL Table.
 

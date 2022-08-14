@@ -8,9 +8,9 @@ Essentially, this allows converting APIs/code/services into fast in-memory analy
 
 APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Data Source Applications, DSAs. A DSA is a JSON that describes 1) required parameters and a 2) JS function template.
 
-Boiling renders the function tamplate with the parameters parsed from the SQL and calls it with a pre-defined set of parameters, like with an instantiation of the NodeJS AWS SDK (`aws-sdk`), and AWS `region`.
+Boiling renders the function tamplate with the parameters parsed from the SQL and calls it with a pre-defined set of input parameters, like an instantiation of the NodeJS AWS SDK (`aws-sdk`).
 
-> You can install JS function templates into Boiling and use them in your SQL with the Table Function SQL syntax. See www.boilingdata.com on how to manage your DSAs (list, install, update, etc.).
+> You can install Data Source Applications into Boiling and use them in your SQL with the Table Function SQL syntax. See www.boilingdata.com on how to manage your DSAs (list, install, update, etc.).
 
 ```sql
   SELECT  key, size
@@ -18,7 +18,7 @@ Boiling renders the function tamplate with the parameters parsed from the SQL an
 ORDER BY  size;
 ```
 
-Boiling stores the results (JSON, Array of Objects) into an in-memory SQL Table. Then it executes the given SQL over it. Further queries with the same DSA parameters will re-use the cached SQL Table.
+Boiling stores the results (JSON, Array of Objects) into an in-memory SQL Table. Then it executes the given SQL over it. Next queries hitting the same DSA with the same parameters will re-use the cached SQL Table.
 
 ## DSA is a JSON file
 

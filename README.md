@@ -32,6 +32,14 @@ ORDER BY  "Name";
 
 Boiling renders the function template with parameters parsed from SQL, calls the function, infers types from the returned JSON, create a new in-memory table (e.g. on DuckDB), inserts the Objects as rows into it, and runs your SQL over it.
 
+```sql
+CREATE TABLE IF NOT EXISTS dsa_awssdk_v9V(Key STRING, LastModified STRING, ETag STRING, ChecksumAlgorithm STRING, Size INTEGER, StorageClass STRING);
+INSERT INTO dsa_awssdk_v9V VALUES ('demo.parquet', '"2022-06-18T10:14:03.000Z"', '"f5d2e2bda78a61d9ed9a184ccf3beba2-58"', '[]', 484530996, 'STANDARD');
+INSERT INTO dsa_awssdk_v9V VALUES ('demo2.parquet', '"2022-06-18T10:14:24.000Z"', '"f5d2e2bda78a61d9ed9a184ccf3beba2-58"', '[]', 484530996, 'STANDARD');
+INSERT INTO dsa_awssdk_v9V VALUES ('demo4.duckdb.zst', '"2022-06-18T10:55:23.000Z"', '"85669ad1c741265a227e6eafc53cac62-43"', '[]', 359243721, 'STANDARD');
+INSERT INTO dsa_awssdk_v9V VALUES ('test.parquet', '"2022-05-23T16:37:00.000Z"', '"19c7dc463166dd08c931736ad9048a35"', '[]', 2783, 'STANDARD');
+```
+
 After the first call, the API call results are cached in an in-memory SQL database table and can be re-used for various SQL queries. Thus, further queries using the same DSA and parameters will not invoke the DSA application but re-use the cached results in the SQL Table.
 
 ## Example
@@ -84,7 +92,16 @@ Please see the [`dsa.awssdk.json`](dsa.awssdk.json) file. We have copied it belo
 
 ## Installation to BoilingData
 
-TBD.
+Please see Boiling documentation.
+
+## Development
+
+We run the example code on Amazon Linux Lambda NodeJS image, similar to what AWS Lambda uses.
+
+```shell
+yarn build
+yarn test
+```
 
 ## Security Considerations
 

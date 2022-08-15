@@ -8,9 +8,11 @@ Essentially, this allows converting APIs/code/services into fast in-memory analy
 
 ## Boiling Apps
 
-APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Boiling Apps. A Boiling App is a JSON formatted string that describes 1) required parameters and a 2) JS function template string. That's all what is required. No compiling, transpiling, or packaging.
+APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Boiling Apps. A Boiling App is a JSON formatted string that describes 1) required parameters and a 2) JS function template string.
 
-Boiling renders the function tamplate with the parameters parsed from the SQL and calls it with a pre-defined set of input parameters, like with an instantiation of the NodeJS AWS SDK (`aws-sdk`).
+That's all what is required. No compiling, no transpiling, no packaging. Just a JSON file.
+
+Boiling renders the function template with the parameters parsed from the SQL and calls it with a pre-defined set of input parameters (Boiling Apps API), like with an instantiation of the NodeJS AWS SDK (`aws-sdk`).
 
 > You can install Boiling Apps into Boiling and use them in your SQL with the Table Function SQL syntax (`apps.awssdk('S3','listObjectsV2','{"Bucket":"myBucket"}','.Contents')`). See www.boilingdata.com on how to manage your Boiling Apps (list, install, update, etc.).
 

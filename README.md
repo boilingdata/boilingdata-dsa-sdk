@@ -2,7 +2,7 @@
 
 > Now you have Boiling Apps, in addition to Boiling Data..
 
-This repository is an SDK (example) for creating Boiling Apps, namely integrations into [BoilingData](https://www.boilingdata.com/) ("Boiling") that can then be queried with SQL like any other data source.
+This repository is an SDK (example) for creating Boiling Apps, namely integrations into [BoilingData](https://www.boilingdata.com/) ("Boiling") that can then be queried with SQL like any other SQL Compute Cached data source.
 
 Essentially, this allows converting APIs/code/services into fast in-memory analytics SQL caches, on-demand, that you query with SQL and join with other Boiling Apps or with more static data on S3 Data Lake like Parquet files (Boiling Data). Fast embedded databases are leveraged to deliver high analytics performance with in-memory tables.
 

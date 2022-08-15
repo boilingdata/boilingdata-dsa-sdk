@@ -2,8 +2,9 @@
   {
     "version": "0.1.0",
     "name": "awssdk",
-    "description": "AWS SDK Data Source App (DSA) for BoilingData",
+    "description": "AWS SDK Boiling App",
     "templateType": "json-templates",
+    "templateVersion": "1.0.0",
     "funcTemplate": "async ({ AWS, region }) => { const _s = new AWS.{{service}}({ region }); return (await _s.{{apicall}}({{params}}).promise().catch(err => console.error(err))){{resultPath}}; }",
     "parameters": [
       {
@@ -25,15 +26,15 @@
     ],
     "examples": [
       {
-        "sql": "SELECT \"Name\", \"CreationDate\" FROM dsa.awssdk('S3','listBuckets','','.Buckets');",
+        "sql": "SELECT \"Name\", \"CreationDate\" FROM apps.awssdk('S3','listBuckets','','.Buckets');",
         "description": "Use AWS NodeJS SDK to all S3 Buckets"
       },
       {
-        "sql": "SELECT key, size FROM dsa.awssdk('S3','listObjectsV2','{\"Bucket\":\"boilingdata-demo\",\"Delimiter\":\"/\"}','.Contents') WHERE key LIKE '%.parquet' ORDER BY key;",
+        "sql": "SELECT key, size FROM apps.awssdk('S3','listObjectsV2','{\"Bucket\":\"boilingdata-demo\",\"Delimiter\":\"/\"}','.Contents') WHERE key LIKE '%.parquet' ORDER BY key;",
         "description": "Use AWS NodeJS SDK to list a bucket, with delimiter (folders)"
       },
       {
-        "sql": "SELECT * FROM dsa.awssdk('Lambda','invoke','{\"FunctionName\":\"myLatestScoresLambda\",\"Payload\":JSON.stringify({\"region\":\"us\"})}','') ORDER BY score;",
+        "sql": "SELECT * FROM apps.awssdk('Lambda','invoke','{\"FunctionName\":\"myLatestScoresLambda\",\"Payload\":JSON.stringify({\"region\":\"us\"})}','') ORDER BY score;",
         "description": "Use AWS NodeJS SDK to call Lambda function"
       }
     ]

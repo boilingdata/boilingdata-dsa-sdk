@@ -36,9 +36,9 @@ function getInsertsFromJSON(rows, tableName) {
   });
 }
 
-function getDataSourceAppsFromSQL(sql) {
+function getBoilingAppCalls(sql) {
   const stmts = parsesql(sql);
-  let dsas = [];
+  let apps = [];
   jp.apply(stmts, "$..fromClause", (fromClause) => {
     const func = fromClause[0]?.RangeFunction?.functions[0]?.List?.items[0]?.FuncCall;
     const cat = func?.funcname[0]?.String?.str;
@@ -48,25 +48,25 @@ function getDataSourceAppsFromSQL(sql) {
       if (a.A_Const?.val?.Integer) return a.A_Const?.val?.Integer.ival;
       return null;
     });
-    if (cat === "dsa") {
+    if (cat === "apps") {
       const hash = crypto.createHash("sha1").update(JSON.stringify(parameters)).digest("base64");
       const tablename = `${cat}_${name}_${hash
         .replace(/\+/g, "X")
         .replace(/\=/g, "Y")
         .replace(/\-/g, "Z")
         .replace(/\//g, "V")}`;
-      dsas.push({ cat, name, tablename, parameters });
+      apps.push({ cat, name, tablename, parameters });
       const simpleFrom = { RangeVar: { relname: tablename } };
       return [simpleFrom];
     }
     return fromClause;
   });
   const deparsed = deparse(stmts);
-  return { deparsed, dsas };
+  return { deparsed, apps };
 }
 
 module.exports = {
   getCreateTableFromJSON,
   getInsertsFromJSON,
-  getDataSourceAppsFromSQL,
+  getBoilingAppCalls,
 };

@@ -1,9 +1,9 @@
 const AWS = require("aws-sdk");
 const { Connection, DuckDB } = require("node-duckdb");
-const { getCreateTableFromJSON, getInsertsFromJSON, getDataSourceAppsFromSQL } = require("./lib/sql-helpers");
-const { getDSAsForApps, renderDSAFuncTemplates } = require("./lib/dsa");
+const { getCreateTableFromJSON, getInsertsFromJSON } = require("./lib/sql-helpers");
+const { getBoilingApps } = require("./lib/boiling-apps");
 
-const dsaLib = require("../dsa.awssdk.json");
+const appLib = require("../app.awssdk.json");
 
 async function createTableWithDataFromJSON(connection, rows, tableName) {
   let allStmts = "";
@@ -25,23 +25,22 @@ async function main() {
   const duckdb = new DuckDB();
   const duckDbConn = new Connection(duckdb);
 
-  sql = `SELECT "key", "size" FROM dsa.awssdk('S3','listObjectsV2','{"Bucket":"boilingdata-demo","Delimiter":"/"}','.Contents') WHERE "key" LIKE '%.parquet' ORDER BY "key";`;
-  const apps = getDataSourceAppsFromSQL(sql);
-  const DSAs = getDSAsForApps(apps, dsaLib);
-  const renderedDSAs = renderDSAFuncTemplates(DSAs);
+  sql = `SELECT "key", "size" FROM apps.awssdk('S3','listObjectsV2','{"Bucket":"boilingdata-demo","Delimiter":"/"}','.Contents') WHERE "key" LIKE '%.parquet' ORDER BY "key";`;
+  const boilingApps = getBoilingApps(sql, appLib);
 
   await Promise.all(
-    renderedDSAs.dsas.map(async (dsa) => {
-      const func = new Function("return " + dsa.functionString)();
+    boilingApps.apps.map(async (app) => {
+      console.log(app);
+      const func = new Function("return " + app.functionString)();
       const appResp = await func({ AWS, region: "eu-west-1" });
-      const pushRespToDuckDB = await createTableWithDataFromJSON(duckDbConn, appResp, dsa.tablename);
+      const pushRespToDuckDB = await createTableWithDataFromJSON(duckDbConn, appResp, app.tablename);
       console.log(pushRespToDuckDB + "\n");
       await duckDbConn.executeIterator(pushRespToDuckDB);
     })
   );
 
   console.log(sql);
-  console.log((await duckDbConn.executeIterator(renderedDSAs.deparsed)).fetchAllRows());
+  console.log((await duckDbConn.executeIterator(boilingApps.deparsed)).fetchAllRows());
 
   duckDbConn.close();
   duckdb.close();

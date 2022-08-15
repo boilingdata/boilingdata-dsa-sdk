@@ -1,16 +1,18 @@
-# Integrate anything with SQL - BoilingData DSAs
+# Boiling Apps - Integrate anything with SQL
 
-This repository is an SDK for creating integrations into [BoilingData](https://www.boilingdata.com/) ("Boiling") that can then be queried with SQL.
+> Now you have Boiling Apps, in addition to Boiling Data..
 
-Essentially, this allows converting APIs/code/services into fast in-memory analytics SQL caches, on-demand, that you query with SQL and join with other data integrations or with more static data on S3 Data Lake like Parquet files. Fast embedded databases are leveraged to deliver high analytics performance with in-memory tables.
+This repository is an SDK (example) for creating Boiling Apps, namely integrations into [BoilingData](https://www.boilingdata.com/) ("Boiling") that can then be queried with SQL like any other data source.
 
-## Data Source Applications
+Essentially, this allows converting APIs/code/services into fast in-memory analytics SQL caches, on-demand, that you query with SQL and join with other Boiling Apps or with more static data on S3 Data Lake like Parquet files (Boiling Data). Fast embedded databases are leveraged to deliver high analytics performance with in-memory tables.
 
-APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Data Source Applications, DSAs. A DSA is a JSON that describes 1) required parameters and a 2) JS function template.
+## Boiling Apps
 
-Boiling renders the function tamplate with the parameters parsed from the SQL and calls it with a pre-defined set of input parameters, like an instantiation of the NodeJS AWS SDK (`aws-sdk`).
+APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Boiling Apps. A Boiling App is a JSON formatted string that describes 1) required parameters and a 2) JS function template string. That's all what is required. No compiling, transpiling, or packaging.
 
-> You can install Data Source Applications into Boiling and use them in your SQL with the Table Function SQL syntax. See www.boilingdata.com on how to manage your DSAs (list, install, update, etc.).
+Boiling renders the function tamplate with the parameters parsed from the SQL and calls it with a pre-defined set of input parameters, like with an instantiation of the NodeJS AWS SDK (`aws-sdk`).
+
+> You can install Boiling Apps into Boiling and use them in your SQL with the Table Function SQL syntax (`dsa.awssdk('S3','listObjectsV2','{"Bucket":"myBucket"}','.Contents')`). See www.boilingdata.com on how to manage your DSAs (list, install, update, etc.).
 
 ```sql
   SELECT  key, size
@@ -18,11 +20,11 @@ Boiling renders the function tamplate with the parameters parsed from the SQL an
 ORDER BY  size;
 ```
 
-Boiling stores the results (JSON, Array of Objects) into an in-memory SQL Table. Then it executes the given SQL over it. Next queries hitting the same DSA with the same parameters will re-use the cached SQL Table.
+Boiling stores the results (JSON, Array of Objects) into an in-memory SQL Table. Then it executes the given SQL over it. Next queries hitting the same Boiling App with the same parameters set will re-use the cached in-memory SQL Table and provide blazing fast query responses.
 
-## DSA is a JSON file
+### Boiling App is a JSON file
 
-The data source application consists of a JSON file, like [`dsa.awssdk.json`](dsa.awssdk.json), that can be installed into your Boiling account and then used in your SQL queries.
+Boiling App consists of a JSON file, like [`dsa.awssdk.json`](dsa.awssdk.json), that can be installed into your Boiling account and then used in your SQL queries.
 
 ```sql
   SELECT  "Name", "CreationDate"
@@ -32,7 +34,7 @@ The data source application consists of a JSON file, like [`dsa.awssdk.json`](ds
 ORDER BY  "Name";
 ```
 
-Boiling renders the function template with parameters parsed from SQL, calls the function, infers types from the returned JSON, create a new in-memory table (e.g. on DuckDB), inserts the Objects as rows into it, and runs your SQL over it.
+Boiling renders the function template with parameters parsed from SQL, calls the function, infers types from the returned JSON, create a new in-memory table (e.g. on DuckDB), loads the Objects as rows into it, and runs your SQL over it.
 
 ```sql
 CREATE TABLE IF NOT EXISTS dsa_awssdk_v9V(Key STRING, LastModified STRING, ETag STRING, ChecksumAlgorithm STRING, Size INTEGER, StorageClass STRING);
@@ -42,9 +44,11 @@ INSERT INTO dsa_awssdk_v9V VALUES ('demo4.duckdb.zst', '"2022-06-18T10:55:23.000
 INSERT INTO dsa_awssdk_v9V VALUES ('test.parquet', '"2022-05-23T16:37:00.000Z"', '"19c7dc463166dd08c931736ad9048a35"', '[]', 2783, 'STANDARD');
 ```
 
-After the first call, the API call results are cached in an in-memory SQL database table and can be re-used for various SQL queries. Thus, further queries using the same DSA and parameters will not invoke the DSA application but re-use the cached results in the SQL Table.
+NOTE: Boiling uses more effective ways to load the data than plain INSERT statements when it makes sense. This is just an example.
 
-## Example
+The Boiling App call (with the set of params) results are stored in an in-memory SQL database table and can be queried again with Boiling SQL queries. Thus, further queries using the same Boiling App and parameters will not invoke the Boiling App but re-use the cached results in the SQL Table.
+
+### Example
 
 Please see the [`dsa.awssdk.json`](dsa.awssdk.json) file. We have copied it below.
 
@@ -55,6 +59,7 @@ Please see the [`dsa.awssdk.json`](dsa.awssdk.json) file. We have copied it belo
     "name": "awssdk",
     "description": "AWS SDK Data Source App (DSA) for BoilingData",
     "templateType": "json-templates",
+    "templateVersion": "1.0.0",
     "funcTemplate": "async ({ AWS, region }) => { const _s = new AWS.{{service}}({ region }); return (await _s.{{apicall}}({{params}}).promise().catch(err => console.error(err))){{resultPath}}; }",
     "parameters": [
       {
@@ -92,37 +97,47 @@ Please see the [`dsa.awssdk.json`](dsa.awssdk.json) file. We have copied it belo
 ]
 ```
 
-## Installation to BoilingData
+### Boiling App Hierarchies
 
-Please see Boiling documentation.
+We will add support for Boiling App (alias) hierarchies, so that you can essentially create more easily consumable aliases with default values for some of the variables of a Boiling App.
+
+Let's say you want to call your own Lambda but instead of doing it with `SELECT * FROM dsa.awssdk('Lambda','invoke','{"FunctionName":"myLambda","Payload":JSON.stringify({"region":"us"})}',''});`, you could just call `SELECT * FROM dsa.myLambda('us');`.
+
+### Installation to BoilingData
+
+TBD. Please see Boiling documentation.
 
 ## Development
 
-We run the example code on Amazon Linux Lambda NodeJS image, similar to what AWS Lambda uses.
+We run the example code on Amazon Linux Lambda NodeJS docker container image, similar to what AWS Lambda uses. We use the AWS SDK Boiling App as an example and query S3.
 
 ```shell
 yarn build
 yarn test
 ```
 
-## Performance Considerations
+## Analysis
 
-Once in the in-memory embedded database tables, like DuckDB, the queries run blazing fast run multi-threaded and single tenant (query dedicated CPU and memory resources).
+### Performance Considerations
 
-Getting the data into the memory, into the SQL Table is slower and thus introduces initial loadingn delay. Like reading DuckDB or Parquet files from S3 with all the available network bandwidth, or with DSAs reading from anything you define (a DSA could be just random number generator that generates test data).
+Once in the in-memory embedded database tables, like DuckDB, the queries run blazing fast on multi-threaded and single tenant query dedicated CPU and memory resources.
 
-With DSAs, we use JSON as the interface, which is very inefficient transport format in general. However, APIs and services usually respond with JSON, so it is a convenient way of integrating and creating sources into Boiling. Furthermore, we don't use JSON with the queries as once the data has been initially loaded it is in database native optimised format.
+Getting the data into the memory, into the SQL Table is slower and thus introduces initial loading delay. Like reading DuckDB or Parquet files from S3 with all the available network bandwidth, or with DSAs reading from anything you define (a DSA could be just random number generator that generates test data).
 
-## Security Considerations
+With Boiling Apps, we use JSON as the interface to return the data to Boiling, which is very inefficient transport format in general. However, APIs and services usually respond with JSON, so it is a convenient way of integrating and creating sources into Boiling in an already supported and existing way. Furthermore, JSON is NOT used when the queries are ran as the data at that point has already been loaded into the database native (optimised) format.
 
-Boiling runs queries in single tenant resources that have secure execution boundaries (e.g. AWS Lambda that is also PCI DSS compliant). DSA applications are also run within the limits of the AWS IAM Roles that are provided by customers.
+### Security Considerations
 
-Since every query has its own dedicated resources and customer defined (AWS IAM) access policies, interference between customers is blocked and exposure is controlled. Also, no DSA has access to the Boiling system resources.
+Boiling runs queries in single tenant resources that have secure execution boundaries (e.g. AWS Lambda that is also PCI DSS compliant among other things). Boiling Apps are also run within the security context of the AWS IAM Roles that are provided by users accessing their own data and interfaces (or public interfaces).
 
-DSA functions are run in `"use strict";` mode with `new Function()` API, and under customer provided IAM assumed role. DSAs are JSON files that anybody can review and validate. Also, installing them is under the control of the user. However, like with any code, users are responsible to maintain the code and install updates when necessary (unless it is a DSA that Boiling maintains, provides, and updates when necessary).
+Since every query has its own dedicated resources and customer defined (AWS IAM) access policies, interference between customers is blocked and exposure is controlled. Also, no Boiling App has access to the Boiling system resources.
 
-## Discussion
+Boiling Apps are run in `"use strict";` mode with `new Function()` API, and under customer provided IAM assumed role. Boiling Apps are JSON files that anybody can review and validate. Also, installing them is under the control of the user. However, like with any code, users are responsible to maintain the code and install updates when necessary (unless Boiling maintains them on behalf of you).
 
-DSAs are not meant to be big applications that require loads of modules and hundreds of lines of code, but a small shim layer that can e.g. use `dsa.awssdk()` SQL Table function to invoke your AWS Lambda, or use `dsa.http()` to call your REST API that hosts an entire fleet of microservices.
+In case users want to access resources that require credentials, it is not the best practice to include them into the SQL Table function and thus into the SQL query itself. This is because the SQL queries get logged, may go through various integrations etc. To address this we allow setting and updating credentials for your Boiling Apps in Boiling API (TBD).
+
+### Discussion
+
+Boiling Apps are not meant to be big applications that require loads of modules and hundreds of lines of code, but a small shim layer that can e.g. use `dsa.awssdk()` SQL Table function to invoke your AWS Lambda, or use `dsa.http()` to call your REST API that hosts an entire fleet of microservices.
 
 Error handling needs to be taken care of to avoid hanging queries. We hope that this repository will serve as a starting point to develop reliable and good integrations.

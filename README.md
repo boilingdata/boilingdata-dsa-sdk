@@ -12,7 +12,7 @@ APIs, applications, code, etc. can be integrated into [BoilingData](https://www.
 
 That's all what is required. No compiling, no transpiling, no packaging. Just a JSON file.
 
-Boiling renders the function template with the parameters parsed from the SQL and calls it with a pre-defined set of input parameters (Boiling Apps API), like with an instantiation of the NodeJS AWS SDK (`aws-sdk`).
+Boiling renders the function template with the parameters parsed from the SQL Table function invocations and calls the App with a pre-defined set of input parameters (Boiling Apps API), like with an instantiation of the NodeJS AWS SDK (`aws-sdk`).
 
 > You can install Boiling Apps into Boiling and use them in your SQL with the Table Function SQL syntax (`apps.awssdk('S3','listObjectsV2','{"Bucket":"myBucket"}','.Contents')`). See www.boilingdata.com on how to manage your Boiling Apps (list, install, update, etc.).
 

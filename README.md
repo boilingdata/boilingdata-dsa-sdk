@@ -8,7 +8,7 @@ Essentially, this allows converting APIs/code/services into fast in-memory analy
 
 ## Boiling Apps
 
-APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Boiling Apps. A Boiling App is a JSON formatted string that describes 1) required parameters and a 2) JS function template string.
+APIs, applications, code, etc. can be integrated into [BoilingData](https://www.boilingdata.com/) as SQL Tables. We call these Boiling Apps. A Boiling App is a JSON file that describes 1) required parameters and contains a 2) JS function template string.
 
 That's all what is required. No compiling, no transpiling, no packaging. Just a JSON file.
 

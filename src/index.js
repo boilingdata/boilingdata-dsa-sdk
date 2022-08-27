@@ -50,6 +50,11 @@ async function main() {
   const boilingApps5 = getBoilingApps(sql, appLib);
   console.log(boilingApps5);
 
+  console.log("----------------------------------------------");
+  sql = `SELECT "key", "size" FROM awssdk.bucketRecursiveListingWithDelimiter('boilingdata-demo','/') WHERE "key" LIKE '%.parquet' ORDER BY "key";`;
+  const boilingApps6 = getBoilingApps(sql, appLib);
+  console.log(boilingApps6);
+
   await Promise.all(
     boilingApps5.apps.map(async (app) => {
       console.log(app);
@@ -60,10 +65,23 @@ async function main() {
       await duckDbConn.executeIterator(pushRespToDuckDB);
     })
   );
-
   console.log(sql);
   console.log(boilingApps5.deparsed);
   console.log((await duckDbConn.executeIterator(boilingApps5.deparsed)).fetchAllRows());
+
+  await Promise.all(
+    boilingApps6.apps.map(async (app) => {
+      console.log(app);
+      const func = new Function("return " + app.functionString)();
+      const appResp = await func({ AWS, region: "eu-west-1" });
+      const pushRespToDuckDB = await createTableWithDataFromJSON(duckDbConn, appResp, app.tablename);
+      console.log(pushRespToDuckDB + "\n");
+      await duckDbConn.executeIterator(pushRespToDuckDB);
+    })
+  );
+  console.log(sql);
+  console.log(boilingApps6.deparsed);
+  console.log((await duckDbConn.executeIterator(boilingApps6.deparsed)).fetchAllRows());
 
   duckDbConn.close();
   duckdb.close();

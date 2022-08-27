@@ -56,6 +56,17 @@
         "aliasTableName": "bucketRootListing",
         "fixedParameters": ["S3", "listObjectsV2", "{\"Bucket\":\"{{bucket}}\",\"Delimiter\":\"/\"}", ".Contents"],
         "parameters": [{ "name": "bucket" }]
+      },
+      {
+        "sourceApp": "awssdk",
+        "aliasTableName": "bucketRecursiveListingWithDelimiter",
+        "fixedParameters": [
+          "S3",
+          "listObjectsV2",
+          "{\"Bucket\":\"{{bucket}}\",\"Delimiter\":\"{{delimiter}}\"}",
+          ".Contents"
+        ],
+        "parameters": [{ "name": "bucket" }, { "name": "delimiter" }]
       }
     ],
     "examples": [

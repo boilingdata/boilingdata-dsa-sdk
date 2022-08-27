@@ -31,6 +31,12 @@
         "sourceApp": "awssdk",
         "aliasTableName": "demoBucketRecursiveListing",
         "fixedParameters": ["S3", "listObjectsV2", "{\"Bucket\":\"boilingdata-demo\"}", ".Contents"]
+      },
+      {
+        "sourceApp": "awssdk",
+        "aliasTableName": "bucketRecursiveListing",
+        "fixedParameters": ["S3", "listObjectsV2", "{\"Bucket\":\"{{bucket}}\"}", ".Contents"],
+        "parameters": [{ "name": "bucket" }]
       }
     ]
   }

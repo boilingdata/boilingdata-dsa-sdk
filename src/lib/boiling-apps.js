@@ -10,8 +10,9 @@ function renderBoilingApps(apps) {
 }
 
 function getBoilingApps(sql, appsLib) {
-  const appCalls = getBoilingAppCalls(sql);
+  const appCalls = getBoilingAppCalls(sql, appsLib);
   const appTemplates = appCalls.apps.map((app) => {
+    console.log(app);
     const schemaNameLower = app.schema.toLowerCase();
     const appNameLower = app.name?.toLowerCase();
     const foundApp = appsLib
@@ -24,13 +25,29 @@ function getBoilingApps(sql, appsLib) {
     if (!foundApp) {
       throw new Error(`Boiling App not found (${app.schema})`);
     }
+    const foundAlias = foundApp.aliases.find((d) => d.aliasTableName.toLowerCase() === appNameLower);
+    let aliasParams = foundAlias?.fixedParameters;
+    if (foundAlias?.parameters) {
+      let aliasParameters = {};
+      foundAlias.parameters.forEach((p, i) => {
+        Object.assign(aliasParameters, {
+          [p.name]: app.parameters[i],
+        });
+      });
+      app.parameters = undefined; // Must not mix alias defined parameters with the main app params
+      aliasParams = aliasParams.map((p) => {
+        const template = parse(p);
+        return template(aliasParameters);
+      });
+    }
+    console.log(aliasParams);
     let parameters = {};
-    const aliasParams = foundApp.aliases.find((d) => d.aliasTableName.toLowerCase() === appNameLower)?.fixedParameters;
     foundApp?.parameters?.forEach((p, i) =>
       Object.assign(parameters, {
         [p.name]: app.parameters && app.parameters.length >= i ? app.parameters[i] : aliasParams[i],
       })
     );
+    console.log("--- parameters:\n", parameters);
     return { ...app, ...foundApp, parameters };
   });
   return renderBoilingApps(appTemplates);

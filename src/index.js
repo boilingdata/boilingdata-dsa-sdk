@@ -40,6 +40,16 @@ async function main() {
   const boilingApps3 = getBoilingApps(sql, appLib);
   console.log(boilingApps3);
 
+  console.log("----------------------------------------------");
+  sql = `SELECT "key", "size" FROM apps.awssdk.bucketRecursiveListing('boilingdata-demo') WHERE "key" LIKE '%.parquet' ORDER BY "key";`;
+  const boilingApps4 = getBoilingApps(sql, appLib);
+  console.log(boilingApps4);
+
+  console.log("----------------------------------------------");
+  sql = `SELECT "key", "size" FROM awssdk.bucketRecursiveListing('boilingdata-demo') WHERE "key" LIKE '%.parquet' ORDER BY "key";`;
+  const boilingApps5 = getBoilingApps(sql, appLib);
+  console.log(boilingApps5);
+
   /*
   await Promise.all(
     boilingApps.map(async (app) => {

@@ -44,6 +44,12 @@
         "aliasTableName": "demoBucketRecursiveListing",
         "fixedParameters": ["S3", "listObjectsV2", "{\"Bucket\":\"boilingdata-demo\"}", ".Contents"],
         "description": "Table that contains a recursive listing of boilingdata-demo S3 bucket"
+      },
+      {
+        "sourceApp": "awssdk",
+        "aliasTableName": "bucketRecursiveListing",
+        "fixedParameters": ["S3", "listObjectsV2", "{\"Bucket\":\"{{bucket}}\"}", ".Contents"],
+        "parameters": [{ "name": "bucket" }]
       }
     ],
     "examples": [

@@ -2,6 +2,7 @@ const { parse: parsesql, deparse } = require("pgsql-parser");
 const jp = require("jsonpath");
 const crypto = require("crypto");
 const { getDuckDBType } = require("./util.js");
+const util = require("util");
 
 function getCreateTableFromJSON(rows, tableName, dropFirst = true) {
   // CREATE TABLE people(id INTEGER, name VARCHAR);
@@ -36,20 +37,31 @@ function getInsertsFromJSON(rows, tableName) {
   });
 }
 
-function getBoilingAppCalls(sql) {
+function getBoilingAppCalls(sql, appsLib) {
   const stmts = parsesql(sql);
   let apps = [];
   jp.apply(stmts, "$..fromClause", (fromClause) => {
+    console.log(util.inspect(fromClause, false, 15));
     const func = fromClause[0]?.RangeFunction?.functions[0]?.List?.items[0]?.FuncCall;
-    const cat = func?.funcname[0]?.String?.str ?? fromClause[0]?.RangeVar?.catalogname ?? "apps";
-    const schema = func?.funcname[1]?.String?.str ?? fromClause[0]?.RangeVar?.schemaname ?? "";
-    const name = fromClause[0]?.RangeVar?.relname;
-    // console.log(`${cat}.${schema}.${name}`);
+    let cat = func?.funcname[0]?.String?.str ?? fromClause[0]?.RangeVar?.catalogname ?? "apps";
+    let schema = func?.funcname[1]?.String?.str ?? fromClause[0]?.RangeVar?.schemaname ?? "";
+    let name = func?.funcname[2]?.String?.str ?? fromClause[0]?.RangeVar?.relname;
+    console.log(`${cat}.${schema}.${name}`);
     const parameters = func?.args.map((a) => {
       if (a.A_Const?.val?.String) return a.A_Const?.val?.String?.str;
       if (a.A_Const?.val?.Integer) return a.A_Const?.val?.Integer.ival;
       return null;
     });
+    if (cat && schema && !name) {
+      if (appsLib.some((app) => app.appName === cat)) {
+        // awssdk.bucketrecursivelisting('boilingdata-demo') and "awssdk" is found frmo appsLib
+        // ==> apps.awssdk.bucketrecursivelisting('boilingdata-demo')
+        console.log("short hand notation recognised");
+        name = schema;
+        schema = cat;
+        cat = "apps";
+      }
+    }
     if (cat === "apps") {
       const hash = crypto
         .createHash("sha1")

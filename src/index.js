@@ -25,11 +25,24 @@ async function main() {
   const duckdb = new DuckDB();
   const duckDbConn = new Connection(duckdb);
 
+  console.log("----------------------------------------------");
   sql = `SELECT "key", "size" FROM apps.awssdk('S3','listObjectsV2','{"Bucket":"boilingdata-demo","Delimiter":"/"}','.Contents') WHERE "key" LIKE '%.parquet' ORDER BY "key";`;
   const boilingApps = getBoilingApps(sql, appLib);
+  console.log(boilingApps);
 
+  console.log("----------------------------------------------");
+  sql = `SELECT "key", "size" FROM apps.awssdk.demoBucketRootListing WHERE "key" LIKE '%.parquet' ORDER BY "key";`;
+  const boilingApps2 = getBoilingApps(sql, appLib);
+  console.log(boilingApps2);
+
+  console.log("----------------------------------------------");
+  sql = `SELECT "key", "size" FROM apps.awssdk.demoBucketRecursiveListing WHERE "key" LIKE '%.parquet' ORDER BY "key";`;
+  const boilingApps3 = getBoilingApps(sql, appLib);
+  console.log(boilingApps3);
+
+  /*
   await Promise.all(
-    boilingApps.apps.map(async (app) => {
+    boilingApps.map(async (app) => {
       console.log(app);
       const func = new Function("return " + app.functionString)();
       const appResp = await func({ AWS, region: "eu-west-1" });
@@ -41,6 +54,7 @@ async function main() {
 
   console.log(sql);
   console.log((await duckDbConn.executeIterator(boilingApps.deparsed)).fetchAllRows());
+  */
 
   duckDbConn.close();
   duckdb.close();

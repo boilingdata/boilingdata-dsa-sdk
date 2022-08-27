@@ -20,7 +20,7 @@ function getCreateTableFromJSON(rows, tableName, dropFirst = true) {
 
 function getInsertsFromJSON(rows, tableName) {
   return rows.map((row) => {
-    stmt = `INSERT INTO ${tableName} VALUES (`;
+    let stmt = `INSERT INTO ${tableName} VALUES (`;
     // INSERT INTO people VALUES (1, 'Mark'), (2, 'Hannes'), (3, 'Bob');
     let first = true;
     Object.values(row).map((v) => {
@@ -41,21 +41,26 @@ function getBoilingAppCalls(sql) {
   let apps = [];
   jp.apply(stmts, "$..fromClause", (fromClause) => {
     const func = fromClause[0]?.RangeFunction?.functions[0]?.List?.items[0]?.FuncCall;
-    const cat = func?.funcname[0]?.String?.str;
-    const name = func?.funcname[1]?.String?.str;
+    const cat = func?.funcname[0]?.String?.str ?? fromClause[0]?.RangeVar?.catalogname ?? "apps";
+    const schema = func?.funcname[1]?.String?.str ?? fromClause[0]?.RangeVar?.schemaname ?? "";
+    const name = fromClause[0]?.RangeVar?.relname;
+    // console.log(`${cat}.${schema}.${name}`);
     const parameters = func?.args.map((a) => {
       if (a.A_Const?.val?.String) return a.A_Const?.val?.String?.str;
       if (a.A_Const?.val?.Integer) return a.A_Const?.val?.Integer.ival;
       return null;
     });
     if (cat === "apps") {
-      const hash = crypto.createHash("sha1").update(JSON.stringify(parameters)).digest("base64");
-      const tablename = `${cat}_${name}_${hash
+      const hash = crypto
+        .createHash("sha1")
+        .update(JSON.stringify(parameters ?? name))
+        .digest("base64");
+      const tablename = `${cat}_${schema}${name ? "_" : ""}${name ? name : ""}_${hash
         .replace(/\+/g, "X")
         .replace(/\=/g, "Y")
         .replace(/\-/g, "Z")
         .replace(/\//g, "V")}`;
-      apps.push({ cat, name, tablename, parameters });
+      apps.push({ cat, schema, name, tablename, parameters });
       const simpleFrom = { RangeVar: { relname: tablename } };
       return [simpleFrom];
     }

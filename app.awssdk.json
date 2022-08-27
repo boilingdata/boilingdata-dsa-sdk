@@ -1,7 +1,7 @@
 [
   {
     "version": "0.1.0",
-    "name": "awssdk",
+    "appName": "awssdk",
     "description": "AWS SDK Boiling App",
     "templateType": "json-templates",
     "templateVersion": "1.0.0",
@@ -22,6 +22,28 @@
       {
         "name": "resultPath",
         "description": "What part to pick up from the AWS JSON resopnse (e.g. `.Contents`). The response must be an array of objects."
+      }
+    ],
+    "aliases": [
+      {
+        "aliasTableName": "allBuckets",
+        "parameters": ["S3", "listBuckets", "", ".Buckets"],
+        "description": "Table that contains all S3 Buckets listing"
+      },
+      {
+        "aliasTableName": "demoBucketRootListing",
+        "fixedParameters": [
+          "S3",
+          "listObjectsV2",
+          "{\"Bucket\":\"boilingdata-demo\",\"Delimiter\":\"/\"}",
+          ".Contents"
+        ],
+        "description": "Table that contains the listing of boilingdata-demo S3 bucket, root folder only"
+      },
+      {
+        "aliasTableName": "demoBucketRecursiveListing",
+        "fixedParameters": ["S3", "listObjectsV2", "{\"Bucket\":\"boilingdata-demo\"}", ".Contents"],
+        "description": "Table that contains a recursive listing of boilingdata-demo S3 bucket"
       }
     ],
     "examples": [

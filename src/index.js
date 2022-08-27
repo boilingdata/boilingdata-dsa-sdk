@@ -50,9 +50,8 @@ async function main() {
   const boilingApps5 = getBoilingApps(sql, appLib);
   console.log(boilingApps5);
 
-  /*
   await Promise.all(
-    boilingApps.map(async (app) => {
+    boilingApps5.apps.map(async (app) => {
       console.log(app);
       const func = new Function("return " + app.functionString)();
       const appResp = await func({ AWS, region: "eu-west-1" });
@@ -63,8 +62,8 @@ async function main() {
   );
 
   console.log(sql);
-  console.log((await duckDbConn.executeIterator(boilingApps.deparsed)).fetchAllRows());
-  */
+  console.log(boilingApps5.deparsed);
+  console.log((await duckDbConn.executeIterator(boilingApps5.deparsed)).fetchAllRows());
 
   duckDbConn.close();
   duckdb.close();

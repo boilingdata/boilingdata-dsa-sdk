@@ -10,8 +10,8 @@ function renderBoilingApps(apps) {
 }
 
 function getBoilingApps(sql, appsLib) {
-  const appCalls = getBoilingAppCalls(sql, appsLib);
-  const appTemplates = appCalls.apps.map((app) => {
+  const { deparsed, apps: appCalls } = getBoilingAppCalls(sql, appsLib);
+  const appTemplates = appCalls.map((app) => {
     console.log(app);
     const schemaNameLower = app.schema.toLowerCase();
     const appNameLower = app.name?.toLowerCase();
@@ -50,7 +50,7 @@ function getBoilingApps(sql, appsLib) {
     console.log("--- parameters:\n", parameters);
     return { ...app, ...foundApp, parameters };
   });
-  return renderBoilingApps(appTemplates);
+  return { deparsed, apps: renderBoilingApps(appTemplates) };
 }
 
 module.exports = {

@@ -13,7 +13,7 @@
       },
       {
         "name": "apicall",
-        "description": "SDK method to call, like `listObjectsV2`"
+        "description": "SDK method to call, like \"listObjectsV2\""
       },
       {
         "name": "params",
@@ -21,7 +21,7 @@
       },
       {
         "name": "resultPath",
-        "description": "What part to pick up from the AWS JSON resopnse (e.g. `.Contents`). The response must be an array of objects."
+        "description": "What part to pick up from the AWS JSON resopnse (e.g. \".Contents\"). The response must be an array of objects."
       }
     ],
     "aliases": [
@@ -46,19 +46,16 @@
         "description": "Table that contains a recursive listing of boilingdata-demo S3 bucket"
       },
       {
-        "sourceApp": "awssdk",
         "aliasTableName": "bucketRecursiveListing",
         "fixedParameters": ["S3", "listObjectsV2", "{\"Bucket\":\"{{bucket}}\"}", ".Contents"],
         "parameters": [{ "name": "bucket" }]
       },
       {
-        "sourceApp": "awssdk",
         "aliasTableName": "bucketRootListing",
         "fixedParameters": ["S3", "listObjectsV2", "{\"Bucket\":\"{{bucket}}\",\"Delimiter\":\"/\"}", ".Contents"],
         "parameters": [{ "name": "bucket" }]
       },
       {
-        "sourceApp": "awssdk",
         "aliasTableName": "bucketRecursiveListingWithDelimiter",
         "fixedParameters": [
           "S3",

@@ -10,7 +10,6 @@ services:
     stdin_open: true
     image: amazonlinux:latest
     environment:
-      #AWS_CONTAINER_CREDENTIALS_RELATIVE_URI: $AWS_CONTAINER_CREDENTIALS_RELATIVE_URI
       AWS_PROFILE: default
       AWS_CONFIG_FILE: /root/.aws/credentials
       AWS_DEFAULT_REGION: "eu-west-1"

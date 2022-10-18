@@ -1,0 +1,4 @@
+{
+  "appName": "rand1010",
+  "funcTemplate": "async () => [...new Array(10)].map(row => [...new Array(10)].map((col,i) => ({ [i]: Math.random()*1000 })))"
+}
